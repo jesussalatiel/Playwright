@@ -1,0 +1,22 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "resolveJsonModule": true,
+    "strict": false,
+    "types": ["node"],
+    "esModuleInterop": true,
+    "paths": {
+      "@response/*": ["./features/api/responses/*"]
+    }
+  },
+  "include": ["src/**/*", "src/steps/**/*", "features/api/responses/joi/*"],
+  "exclude": ["node_modules"]
+}
