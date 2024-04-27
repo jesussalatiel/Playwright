@@ -3,8 +3,8 @@ Feature: Playwright multi docs
 
   Background: Navigation
     Given I create a new user with the following information:
-      | code | mobile            | name    | lastName | middleName | motherLastName | email                  | document_type | document_number            |
-      | +52  | set:random:mobile | Capitán | Nuñez    |            | Bolañoz        | local:default:settings | DNI           | set:random:document_number |
+      | code | mobile            | name    | last_name | middle_name | mother_last_name | email            | document_type | document_number            |
+      | +52  | set:random:mobile | Capitán | Nuñez     |             | Bolañoz          | set:random:email | DNI           | set:random:document_number |
 
   @debug
   Scenario Outline: Changing theme to required mode - 1

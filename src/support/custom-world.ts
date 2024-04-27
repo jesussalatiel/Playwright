@@ -1,4 +1,4 @@
-import { setDocumentNumber, setMobilePhoneNumber } from './utils/environment';
+import { TestData } from './utils/TestData';
 import { setWorldConstructor, World, IWorldOptions } from '@cucumber/cucumber';
 import * as messages from '@cucumber/messages';
 import { BrowserContext, Page, PlaywrightTestOptions, APIRequestContext } from '@playwright/test';
@@ -25,8 +25,8 @@ export class CustomWorld extends World implements ICustomWorld {
     super(options);
   }
   debug = false;
-  identityDocument = setDocumentNumber();
-  mobile = setMobilePhoneNumber();
+  identityDocument = TestData.setDocumentNumber();
+  mobile = TestData.setMobilePhoneNumber();
 }
 
 setWorldConstructor(CustomWorld);
