@@ -1,14 +1,15 @@
-import { ICustomWorld } from '../support/custom-world';
-import { config } from '../support/config';
-import { Given, When, Then } from '@cucumber/cucumber';
+import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import console from 'node:console';
+import { config } from '../../support/config';
+import { ICustomWorld } from '../../support/custom-world';
+import { TestData } from '../../support/utils/TestData';
 
-Given('Go to the playwright {string}', async function (this: ICustomWorld, url: string) {
-  const page = this.page!;
-  await page.goto(config.BASE_URL);
-  console.log('Print from Step: ' + this.identityDocument);
-});
+When(
+  'I configure the browser with the following params:',
+  async function (this: ICustomWorld, table: DataTable) {
+    await TestData.setBrowserEnv(table, this);
+  },
+);
 
 Given('Go to the playwright website', async function (this: ICustomWorld) {
   const page = this.page!;

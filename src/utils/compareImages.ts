@@ -1,13 +1,12 @@
-// Added by https://github.com/ortsevlised
-
-import { config } from '../support/config';
-import { ICustomWorld } from '../support/custom-world';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ensureFile, pathExists } from 'fs-extra';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import * as fs from 'fs';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { ICustomWorld } from '../support/custom-world';
+import { config } from '../support/config';
 
 /**
  * Compares a screenshot to a base image,
@@ -55,6 +54,7 @@ export async function compareToBaseImage(
     return;
   }
   const img1 = PNG.sync.read(screenshot);
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   const difference = getDifference(img1, baseImage, threshold);
   if (difference) {
     await customWorld.attach(difference, 'image/png;base64');

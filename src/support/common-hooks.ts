@@ -1,53 +1,35 @@
-import { ICustomWorld } from './custom-world';
-import { config } from './config';
-import { Resolutions } from './utils/resolutions';
-import { Before, After, BeforeAll, AfterAll, Status, setDefaultTimeout } from '@cucumber/cucumber';
-import {
-  chromium,
-  ChromiumBrowser,
-  firefox,
-  FirefoxBrowser,
-  webkit,
-  WebKitBrowser,
-  ConsoleMessage,
-  request,
-} from '@playwright/test';
+import { Before, After, Status, setDefaultTimeout, AfterAll } from '@cucumber/cucumber';
+import { chromium, firefox, request, ConsoleMessage, webkit } from '@playwright/test';
 import { ITestCaseHookParameter } from '@cucumber/cucumber/lib/support_code_library_builder/types';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ensureDir } from 'fs-extra';
-import * as console from 'node:console';
+import { config } from './config';
+import { ICustomWorld } from './custom-world';
 
-let browser: ChromiumBrowser | FirefoxBrowser | WebKitBrowser;
+let browser: any;
 const tracesDir = 'traces';
 
 const TIME_OUT_MS = 10 * 1000;
 
 setDefaultTimeout(process.env.PWDEBUG ? -1 : TIME_OUT_MS);
 
-BeforeAll(async function () {
-  switch (config.browser) {
-    case 'firefox':
-      browser = await firefox.launch(config.browserOptions);
-      break;
-    case 'webkit':
-      browser = await webkit.launch(config.browserOptions);
-      break;
-    default:
-      browser = await chromium.launch(config.browserOptions);
-  }
-  await ensureDir(tracesDir);
-});
-
-Before({ tags: '@ignore' }, async function () {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return 'skipped' as any;
-});
-
 Before({ tags: '@debug' }, async function (this: ICustomWorld) {
   this.debug = true;
 });
 
-Before(async function (this: ICustomWorld) {
-  console.log('Print from Before: ' + this.identityDocument);
+Before({ tags: '@firefox' }, async () => {
+  browser = await firefox.launch(config.browserOptions);
+  await ensureDir(tracesDir);
+});
+
+Before({ tags: '@chrome or @chromium' }, async () => {
+  browser = await chromium.launch(config.browserOptions);
+  await ensureDir(tracesDir);
+});
+
+Before({ tags: '@safari' }, async () => {
+  browser = await webkit.launch(config.browserOptions);
+  await ensureDir(tracesDir);
 });
 
 Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
@@ -57,10 +39,9 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
   this.context = await browser.newContext({
     acceptDownloads: true,
     recordVideo: process.env.PWVIDEO ? { dir: 'screenshots' } : undefined,
-    viewport: Resolutions.DESKTOP,
   });
+
   this.server = await request.newContext({
-    // All requests we send go to this API endpoint.
     baseURL: config.BASE_API_URL,
   });
 
@@ -71,19 +52,22 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
       await this.attach(msg.text());
     }
   });
+
   this.feature = pickle;
+
+  await this.page.goto(config.BASE_URL);
 });
 
 After(async function (this: ICustomWorld, { result }: ITestCaseHookParameter) {
   if (result) {
-    await this.attach(`Status: ${result?.status}. Duration:${result.duration?.seconds}s`);
+    this.attach(`Status: ${result?.status}. Duration:${result.duration?.seconds}s`);
 
     if (result.status !== Status.PASSED) {
       const image = await this.page?.screenshot();
 
-      // Replace : with _ because colons aren't allowed in Windows paths
       const timePart = this.startTime?.toISOString().split('.')[0].replaceAll(':', '_');
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       image && (await this.attach(image, 'image/png'));
       await this.context?.tracing.stop({
         path: `${tracesDir}/${this.testName}-${timePart}trace.zip`,
@@ -92,10 +76,5 @@ After(async function (this: ICustomWorld, { result }: ITestCaseHookParameter) {
   }
   await this.page?.close();
   await this.context?.close();
-
-  console.log('Print from After: ' + this.identityDocument);
-});
-
-AfterAll(async function () {
   await browser.close();
 });

@@ -1,7 +1,7 @@
-import { TestData } from './utils/TestData';
 import { setWorldConstructor, World, IWorldOptions } from '@cucumber/cucumber';
 import * as messages from '@cucumber/messages';
 import { BrowserContext, Page, PlaywrightTestOptions, APIRequestContext } from '@playwright/test';
+import { TestData } from './utils/TestData';
 
 export interface ICustomWorld extends World {
   debug: boolean;
@@ -21,11 +21,15 @@ export interface ICustomWorld extends World {
 }
 
 export class CustomWorld extends World implements ICustomWorld {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(options: IWorldOptions) {
     super(options);
   }
+
   debug = false;
+
   identityDocument = TestData.setDocumentNumber();
+
   mobile = TestData.setMobilePhoneNumber();
 }
 

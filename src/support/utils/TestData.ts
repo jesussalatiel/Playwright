@@ -1,6 +1,7 @@
-import { ICustomWorld } from '../custom-world';
 import { DataTable } from '@cucumber/cucumber';
 import { faker } from '@faker-js/faker';
+import { ViewportSize, devices } from '@playwright/test';
+import { ICustomWorld } from '../custom-world';
 
 interface IUserData {
   code: string;
@@ -21,7 +22,7 @@ const TagsFromDataTable = {
 };
 
 export class TestData {
-  static transformTableRows(context: ICustomWorld, table: DataTable): IUserData | undefined {
+  static transformTableRows(context: ICustomWorld, table: DataTable): IUserData {
     let transformedRow: IUserData | undefined;
 
     table.hashes().some((row: Record<string, string>) => {
@@ -54,6 +55,8 @@ export class TestData {
         case value.includes(TagsFromDataTable.BY_DOCUMENT_NUMBER):
           copyOfDataTable[key] = context.identityDocument;
           break;
+        default:
+          copyOfDataTable[key] = value;
       }
     });
 
@@ -64,15 +67,15 @@ export class TestData {
     transformedData: Record<string, string>,
   ): IUserData {
     return {
-      code: transformedData['code'],
-      document_number: transformedData['document_number'],
-      document_type: transformedData['document_type'],
-      email: transformedData['email'],
-      lastName: transformedData['last_name'],
-      middleName: transformedData['middle_name'],
-      mobile: transformedData['mobile'],
-      motherLastName: transformedData['mother_last_name'],
-      name: transformedData['name'],
+      code: transformedData.code,
+      document_number: transformedData.document_number,
+      document_type: transformedData.document_type,
+      email: transformedData.email,
+      lastName: transformedData.last_name,
+      middleName: transformedData.middle_name,
+      mobile: transformedData.mobile,
+      motherLastName: transformedData.mother_last_name,
+      name: transformedData.name,
     };
   }
 
@@ -92,11 +95,35 @@ export class TestData {
     const mobileNumberLength = 9;
     let mobileNumber = '9';
 
-    for (let i = 1; i < mobileNumberLength; i++) {
+    for (let i = 1; i < mobileNumberLength; i += 1) {
       const digit = Math.floor(Math.random() * 10);
       mobileNumber += digit.toString();
     }
 
     return String(mobileNumber);
+  }
+
+  static async setBrowserEnv(table: DataTable, context: ICustomWorld) {
+    await Promise.all(
+      // eslint-disable-next-line array-callback-return
+      table.hashes().map((row) => {
+        let setViewPort: ViewportSize;
+        switch (row.device) {
+          case 'Mobile':
+            setViewPort = devices['iPhone 14 Pro'].viewport;
+            break;
+          case 'Tablet':
+            setViewPort = devices['iPad Mini'].viewport;
+            break;
+          default:
+            setViewPort = { width: 1280, height: 1024 };
+        }
+
+        context.page.setViewportSize(setViewPort);
+
+        if (row.browser === 'Firefox') {
+        }
+      }),
+    );
   }
 }

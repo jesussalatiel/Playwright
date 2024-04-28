@@ -1,6 +1,6 @@
+import { Then } from '@cucumber/cucumber';
 import { ICustomWorld } from '../support/custom-world';
 import { compareToBaseImage, getImagePath } from '../utils/compareImages';
-import { Then } from '@cucumber/cucumber';
 
 Then('Snapshot {string}', async function (this: ICustomWorld, name: string) {
   const { page } = this;
@@ -10,10 +10,11 @@ Then('Snapshot {string}', async function (this: ICustomWorld, name: string) {
 Then('Snapshot', async function (this: ICustomWorld) {
   const { page } = this;
   const image = await page?.screenshot();
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   image && (await this.attach(image, 'image/png'));
 });
 
-Then('debug', async function () {
+Then('debug', async () => {
   // eslint-disable-next-line no-debugger
   debugger;
 });
