@@ -1,7 +1,7 @@
 import { DataTable } from '@cucumber/cucumber';
 import { faker } from '@faker-js/faker';
 import { ViewportSize, devices } from '@playwright/test';
-import { ICustomWorld } from '../custom-world';
+import { ICustomWorld } from '../support/custom-world';
 
 interface IUserData {
   code: string;

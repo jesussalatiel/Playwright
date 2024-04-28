@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { DataTable, Given } from '@cucumber/cucumber';
 import console from 'node:console';
-import { TestData } from '../../../support/utils/TestData';
+import { TestData } from '../../../assets/TestData';
 import { ICustomWorld } from '../../../support/custom-world';
 
 Given('A cat fact is recieved', async function (this: ICustomWorld) {

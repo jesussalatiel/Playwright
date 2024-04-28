@@ -1,4 +1,4 @@
-import { Before, After, Status, setDefaultTimeout, AfterAll } from '@cucumber/cucumber';
+import { Before, After, Status, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium, firefox, request, ConsoleMessage, webkit } from '@playwright/test';
 import { ITestCaseHookParameter } from '@cucumber/cucumber/lib/support_code_library_builder/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -60,15 +60,15 @@ Before(async function (this: ICustomWorld, { pickle }: ITestCaseHookParameter) {
 
 After(async function (this: ICustomWorld, { result }: ITestCaseHookParameter) {
   if (result) {
-    this.attach(`Status: ${result?.status}. Duration:${result.duration?.seconds}s`);
+    this.attach(`Error: ${result.message}. Duration:${result.duration?.seconds}s`);
 
     if (result.status !== Status.PASSED) {
       const image = await this.page?.screenshot();
 
       const timePart = this.startTime?.toISOString().split('.')[0].replaceAll(':', '_');
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      image && (await this.attach(image, 'image/png'));
+      this.attach(image, 'image/png');
+
       await this.context?.tracing.stop({
         path: `${tracesDir}/${this.testName}-${timePart}trace.zip`,
       });

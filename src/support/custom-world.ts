@@ -1,7 +1,7 @@
 import { setWorldConstructor, World, IWorldOptions } from '@cucumber/cucumber';
 import * as messages from '@cucumber/messages';
 import { BrowserContext, Page, PlaywrightTestOptions, APIRequestContext } from '@playwright/test';
-import { TestData } from './utils/TestData';
+import { TestData } from '../assets/TestData';
 
 export interface ICustomWorld extends World {
   debug: boolean;

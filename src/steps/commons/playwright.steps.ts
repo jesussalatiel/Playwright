@@ -2,7 +2,7 @@ import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { config } from '../../support/config';
 import { ICustomWorld } from '../../support/custom-world';
-import { TestData } from '../../support/utils/TestData';
+import { TestData } from '../../assets/TestData';
 
 When(
   'I configure the browser with the following params:',
